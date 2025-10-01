@@ -1,0 +1,15 @@
+services:
+  deptmain-bot:
+    build: .
+    container_name: deptmain_bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./logs:/app/logs
+    working_dir: /app
+
+# https://timeweb.cloud/tutorials/docker/kak-ustanovit-docker-na-ubuntu-22-04:
+
+# Развернут отдельно в папке root
