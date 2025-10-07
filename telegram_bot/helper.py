@@ -61,7 +61,7 @@ def resolve_message_text(message_marker: str):
     Возвращает фактический текст сообщения по маркеру из очереди.
 
     Вход:
-    - message_marker: строка-маркер вида "{welcome_1}", "{progress_slot_day1_1934}" и т.п.
+    - message_marker: строка-маркер вида "welcome_1", "progress_slot_day1_1934" и т.п. (без фигурных скобок)
 
     Правила:
     - Для простых констант возвращаем соответствующий текст из notification_texts.py
@@ -79,14 +79,7 @@ def resolve_message_text(message_marker: str):
     if not isinstance(message_marker, str):
         return False
 
-    marker = message_marker.strip()
-
-    # Проверяем, что строка обрамлена фигурными скобками { ... }
-    if not (marker.startswith("{") and marker.endswith("}")):
-        return False
-
-    # Убираем крайние скобки — остаётся внутренний код маркера
-    key = marker[1:-1].strip()
+    key = message_marker.strip()
 
     # Прямое соответствие константам
     simple_map = {
