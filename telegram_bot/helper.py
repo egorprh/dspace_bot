@@ -19,7 +19,7 @@ from .notification_texts import (
 )
 
 
-async def send_telegram_message(bot: Bot, telegram_id: int, message: str, max_attempts: int = 3) -> Tuple[str, Optional[str]]:
+async def send_telegram_message(bot: Bot, telegram_id: int, message: str, max_attempts: int = 3) -> Tuple[str, Optional[str], int]:
     """
     Простая отправка сообщения с ретраями.
 
@@ -35,23 +35,25 @@ async def send_telegram_message(bot: Bot, telegram_id: int, message: str, max_at
       пока не исчерпаем лимит.
 
     Возврат:
-    - ("sent", None) при успехе
-    - ("failed", "текст_ошибки") при окончательной неудаче
+    - ("sent", None, attempts_used) при успехе
+    - ("failed", "текст_ошибки", attempts_used) при окончательной неудаче
     """
 
     last_error: Optional[str] = None
+    attempts_used = 0
 
     for attempt in range(1, max_attempts + 1):
+        attempts_used = attempt
         try:
             await bot.send_message(chat_id=telegram_id, text=message)
-            return "sent", None
+            return "sent", None, attempts_used
         except Exception as e:
             # Сохраняем текст ошибки (тип ошибки нам не критичен для решения — важно описание)
             last_error = str(e)
             if attempt < max_attempts:
                 await asyncio.sleep(0.1)
 
-    return "failed", last_error
+    return "failed", last_error, attempts_used
 
 
 def resolve_message_text(message_marker: str):
