@@ -6,7 +6,7 @@ from aiogram import Bot
 import random
 
 # Импортируем наборы текстов и словари прогресс-слотов
-from .notification_texts import (
+from notification_texts import (
     WELCOME_1,
     WELCOME_2,
     PRO_WELCOME_12M,
