@@ -65,9 +65,6 @@ class NotificationScheduler:
 
                 # 2) Время отправки
                 scheduled_at_str = item.get('scheduled_at')
-                if not isinstance(scheduled_at_str, str):
-                    logger.warning(f"⚠️ Нет или некорректный scheduled_at: {item}")
-                    continue
                 try:
                     # Поддержка суффикса 'Z' и смещений
                     if scheduled_at_str.endswith('Z'):
@@ -76,7 +73,7 @@ class NotificationScheduler:
                         scheduled_at = datetime.fromisoformat(scheduled_at_str)
                     if scheduled_at.tzinfo is None:
                         scheduled_at = scheduled_at.replace(tzinfo=timezone.utc)
-                except ValueError as e:
+                except (ValueError, AttributeError) as e:
                     logger.error(f"❌ Ошибка парсинга scheduled_at '{scheduled_at_str}': {e}")
                     continue
 
@@ -112,10 +109,9 @@ class NotificationScheduler:
                 )
 
                 # 5) Формируем обновлённый объект и логируем
-                updated_status = 'sent' if send_status == 'sent' else 'failed'
                 updated = {
                     **item,
-                    'status': updated_status,
+                    'status': 'sent' if send_status == 'sent' else 'failed',
                     'error': error_text,
                     'attempts': item.get('attempts', 0) + attempts_used,
                     'message': resolved_text,
